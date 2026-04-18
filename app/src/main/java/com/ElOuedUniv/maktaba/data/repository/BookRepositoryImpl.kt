@@ -9,7 +9,11 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class BookRepositoryImpl @Inject constructor() : BookRepository {
+    // 1. تعريف القائمة لي نخزنو فيها الكتب مؤقتاً
+    private val booksList = mutableListOf<Book>()
 
+    // 2. تعريف الـ Flow لي يبعث التحديثات للواجهة
+    private val _booksFlow = MutableSharedFlow<List<Book>>(replay = 1)
     private val _booksList = listOf(
         Book(isbn = "11111", title = "Clean Code", nbPages = 10),
         Book(isbn = "22222", title = "The Pragmatic Programmer", nbPages = 0),
@@ -31,9 +35,16 @@ class BookRepositoryImpl @Inject constructor() : BookRepository {
         return _booksList.find { it.isbn == isbn }
     }
 
-    override fun addBook(book: Book) {
+    override  fun addBook(book: Book) {
+            // 1. نزيدو الكتاب للقائمة المحلية (لي تكون معرفة الفوق في الملف)
+            booksList.add(book)
+
+            // 2. نخبرو الـ Flow باللي كاين تحديث (لازم تبعثي القائمة كاملة من جديد)
+        _booksFlow.tryEmit(booksList.toList())
+            }
+
         // TODO: Exercise 2 - Implement adding a book to the list and emitting the new list
         // Hint: This is a bit tricky with sharedFlow, think about how to update it.
     }
-}
+
 

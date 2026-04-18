@@ -24,20 +24,19 @@ fun BookListView(
     onCategoriesClick: () -> Unit = {},
     viewModel: BookViewModel = hiltViewModel()
 ) {
-    val books by viewModel.books.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    
     // TODO: Exercise 3 - Use a single delegated state from the ViewModel
     // val uiState by viewModel.uiState.collectAsState()
-
-    if (/* TODO: uiState.isAddingBook */ false) {
+    val uiState by viewModel.uiState.collectAsState()
+    if (uiState.isAddingBook) {
         AddBookDialog(
-            onDismiss = { /* TODO: viewModel.onAction(BookUiAction.OnDismissAddBook) */ },
+            onDismiss = { viewModel.onAction(BookUiAction.OnDismissAddBook) },
             onConfirm = { title, isbn, pages ->
-                /* TODO: viewModel.onAction(BookUiAction.OnAddBookConfirm(title, isbn, pages)) */
-            }
+                val newBook = Book(isbn = isbn, title = title, nbPages = pages)
+                viewModel.onAction(BookUiAction.OnAddBookConfirm(newBook))
+                  }
         )
     }
+    /* TODO: viewModel.onAction(BookUiAction.OnAddBookConfirm(title, isbn, pages)) */
 
     Scaffold(
         topBar = {
@@ -58,33 +57,34 @@ fun BookListView(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { 
+            FloatingActionButton(
+                onClick = {
                 /* TODO: Exercise 3 - viewModel.onAction(BookUiAction.OnAddBookClick) */
-            }) {
-                Icon(
-                    imageVector = androidx.compose.material.icons.Icons.Default.Add,
-                    contentDescription = "Add Book"
-                )
+                viewModel.onAction(BookUiAction.OnAddBookClick)
+            }
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Book")
             }
         }
+
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (isLoading) {
+            if (uiState.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
                 )
             } else {
-                if (books.isEmpty()) {
+                if (uiState.books.isEmpty()) {
                     EmptyBooksMessage(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 } else {
                     BookList(
-                        books = books,
+                        books = uiState.books,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
