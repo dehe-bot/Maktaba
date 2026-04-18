@@ -36,6 +36,13 @@ class BookViewModel(
     /**
      * Load all books from the use case
      */
+
+// حساب عدد الكتب
+    val totalBooks: Int = _books.value.size
+
+    // حساب مجموع الصفحات
+    val totalPages: Int = _books.value.sumOf { it.nbPages }
+
     private fun loadBooks() {
         viewModelScope.launch {
             _isLoading.value = true

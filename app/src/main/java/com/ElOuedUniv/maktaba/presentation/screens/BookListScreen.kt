@@ -53,6 +53,7 @@ fun BookListScreen(
                 } else {
                     BookList(
                         books = books,
+                        viewModel = viewModel,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -67,19 +68,37 @@ fun BookListScreen(
 @Composable
 fun BookList(
     books: List<Book>,
+    viewModel: BookViewModel,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(books) { book ->
-            BookItem(book = book)
+    Column(modifier = Modifier.padding(16.dp)) {
+        // عرض عدد الكتب ومجموع الصفحات في الأعلى
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "إحصائيات المكتبة",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                Text(text = "إجمالي الكتب: ${viewModel.totalBooks}")
+                Text(text = "إجمالي الصفحات: ${viewModel.totalPages}")
+            }
+        }
+        LazyColumn(
+            modifier = modifier,
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(books) { book ->
+                BookItem(book = book)
+            }
         }
     }
 }
-
 /**
  * Composable for displaying a single book item
  */
