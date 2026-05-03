@@ -2,10 +2,11 @@ package com.ElOuedUniv.maktaba.domain.usecase
 
 import com.ElOuedUniv.maktaba.data.model.Category
 import com.ElOuedUniv.maktaba.data.repository.CategoryRepository
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
 // TODO: Implement this use case
-class GetCategoriesUseCase(
+class GetCategoriesUseCase @Inject constructor(
     private val categoryRepository: CategoryRepository
 ) {
     operator fun invoke(): Flow<List<Category>> {

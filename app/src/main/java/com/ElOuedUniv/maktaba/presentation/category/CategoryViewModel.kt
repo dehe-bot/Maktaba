@@ -11,36 +11,35 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(private val getCategoriesUseCase: GetCategoriesUseCase) : ViewModel() {
 
-    private val _categories = MutableStateFlow<List<Category>>(emptyList())
-    val categories: StateFlow<List<Category>> = _categories.asStateFlow()
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
+    private val _uiState = MutableStateFlow(CategoryUiState())
+    val uiState = _uiState.asStateFlow()
     init {
         loadCategories()
     }
 
     private fun loadCategories() {
         viewModelScope.launch {
-            _isLoading.value = true
-            getCategoriesUseCase()
-                .catch {
-                    _isLoading.value = false
-                }
-                .collect { categoryList ->
-                    _categories.value = categoryList
-                    _isLoading.value = false
-                }
+            _uiState.update { it.copy(isLoading = true) }
+            getCategoriesUseCase().collect { categoriesList ->
+                _uiState.update { it.copy(
+                    categories = categoriesList,
+                    isLoading = false) }
+            }
+        }
         }
     }
 
     fun refreshCategories() {
         loadCategories()
     }
+
+fun loadCategories() {
+    TODO("Not yet implemented")
 }
+

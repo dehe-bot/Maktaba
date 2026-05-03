@@ -20,7 +20,8 @@ class BookViewModel @Inject constructor(
     private val addBookUseCase: AddBookUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(BookUiState())
+    private val _uiState = MutableStateFlow(BookUiState(
+    ))
     val uiState: StateFlow<BookUiState> = _uiState.asStateFlow()
 
     init {
